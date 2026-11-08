@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Lovely Shravika ❤️</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Tone.js for web audio music synthesis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #ffd1dc 0%, #ffe6eb 50%, #fbcfe8 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .font-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .font-serif-logo {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Animated background canvas styling */
+        #heart-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Romantic Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 50px rgba(225, 29, 72, 0.15);
+        }
+
+        /* Pulsing Glow Animation for Heart */
+        @keyframes heartPulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(225, 29, 72, 0.6)); }
+            50% { transform: scale(1.2); filter: drop-shadow(0 0 24px rgba(225, 29, 72, 0.95)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(225, 29, 72, 0.6)); }
+        }
+
+        .animate-heart-pulse {
+            animation: heartPulse 1.3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        /* Floating Character animation */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-boy-float {
+            animation: gentleFloat 4s infinite ease-in-out;
+        }
+
+        /* Sparkle animation */
+        @keyframes sparkleAnim {
+            0%, 100% { opacity: 0.2; transform: scale(0.6) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+        }
+
+        .sparkle {
+            animation: sparkleAnim 2s infinite ease-in-out;
+        }
+
+        /* Interactive Burst Hearts */
+        .burst-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            animation: floatUpAndFade 1.6s ease-out forwards;
+        }
+
+        @keyframes floatUpAndFade {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.6) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(var(--rot));
+            }
+        }
+
+        /* Subtle Monogram Badge Styling */
+        .ss-logo-badge {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,241,242,0.85));
+            border: 1.5px solid rgba(217, 119, 6, 0.45);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15);
+        }
+
+        /* Scratch Card Canvas */
+        #scratch-canvas {
+            touch-action: none;
+            cursor: pointer;
+            border-radius: 1rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fda4af;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="relative flex items-center justify-center min-h-screen p-4 md:p-8" onclick="createGlobalBurst(event)">
+
+    <!-- Background Canvas for Floating Hearts & Particles -->
+    <canvas id="heart-canvas"></canvas>
+
+    <!-- Sound Control Button (Top Right Floating) -->
+    <button id="music-btn" onclick="toggleMusic(event)" class="fixed top-4 right-4 z-50 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-rose-200 shadow-md text-rose-600 font-semibold text-xs md:text-sm flex items-center gap-2 transition hover:scale-105 active:scale-95">
+        <i id="music-icon" class="fa-solid fa-music text-rose-500"></i>
+        <span id="music-text">Play Romantic Music</span>
+    </button>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 w-full max-w-4xl my-auto py-6">
+        
+        <!-- Header Ribbon & Monogram -->
+        <div class="text-center mb-6 flex flex-col items-center gap-2">
+            
+            <!-- Subtle S & S Logo Badge -->
+            <div class="ss-logo-badge px-5 py-1.5 rounded-full flex items-center gap-2.5">
+                <span class="font-serif-logo text-sm tracking-widest text-amber-700 font-bold">S</span>
+                <i class="fa-solid fa-heart text-[10px] text-rose-500 animate-pulse"></i>
+                <span class="font-serif-logo text-sm tracking-widest text-amber-700 font-bold">S</span>
+            </div>
+
+            <span class="inline-flex items-center gap-2 bg-rose-500/10 text-rose-600 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wide border border-rose-200 shadow-sm">
+                <i class="fa-solid fa-sparkles text-xs text-amber-500"></i> Designed Especially For You <i class="fa-solid fa-sparkles text-xs text-amber-500"></i>
+            </span>
+        </div>
+
+        <!-- Countdown Timer Card -->
+        <div class="mb-6 bg-white/80 backdrop-blur-md rounded-2xl p-4 text-center border border-rose-200 shadow-lg shadow-rose-200/40">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-rose-500 mb-2 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-hourglass-half text-amber-500 animate-pulse"></i> Countdown To Our Engagement <i class="fa-solid fa-ring text-amber-500"></i>
+            </h2>
+            <div class="grid grid-cols-4 gap-2 md:gap-4 max-w-sm mx-auto" id="countdown-timer">
+                <div class="bg-gradient-to-b from-rose-50 to-pink-100/70 p-2.5 rounded-xl border border-rose-200 shadow-sm">
+                    <span id="days" class="block text-xl md:text-2xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">Days</span>
+                </div>
+                <div class="bg-gradient-to-b from-rose-50 to-pink-100/70 p-2.5 rounded-xl border border-rose-200 shadow-sm">
+                    <span id="hours" class="block text-xl md:text-2xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">Hours</span>
+                </div>
+                <div class="bg-gradient-to-b from-rose-50 to-pink-100/70 p-2.5 rounded-xl border border-rose-200 shadow-sm">
+                    <span id="minutes" class="block text-xl md:text-2xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">Mins</span>
+                </div>
+                <div class="bg-gradient-to-b from-rose-50 to-pink-100/70 p-2.5 rounded-xl border border-rose-200 shadow-sm">
+                    <span id="seconds" class="block text-xl md:text-2xl font-bold text-rose-600">00</span>
+                    <span class="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">Secs</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Romantic Glass Card -->
+        <div class="glass-card rounded-3xl p-6 md:p-10 transition-all duration-500 hover:shadow-2xl hover:shadow-rose-300/40 border border-white/80">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                
+                <!-- Left Column: Boy SVG Illustration offering glowing heart -->
+                <div class="md:col-span-5 flex flex-col items-center justify-center relative">
+                    
+                    <!-- Decorative glowing aura behind character -->
+                    <div class="absolute w-48 h-48 bg-rose-300/40 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <!-- Boy Character Container -->
+                    <div class="relative animate-boy-float cursor-pointer group" id="boy-character" onclick="onCharacterClick(event)" title="Click to receive our heart!">
+                        
+                        <!-- SVG Cute Anime Couple holding a glowing heart -->
+                        <svg class="w-60 h-64 md:w-72 md:h-80 drop-shadow-xl transition-transform duration-300 group-hover:scale-105" viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Shared ground shadow -->
+                            <ellipse cx="150" cy="320" rx="105" ry="12" fill="#fda4af" opacity="0.4" />
+
+                            <!-- Left character: trousers and shoes -->
+                            <path d="M91 244 L86 307" stroke="#334155" stroke-width="17" stroke-linecap="round"/>
+                            <path d="M125 244 L130 307" stroke="#334155" stroke-width="17" stroke-linecap="round"/>
+                            <ellipse cx="81" cy="311" rx="15" ry="8" fill="#0f172a"/>
+                            <ellipse cx="136" cy="311" rx="15" ry="8" fill="#0f172a"/>
+
+                            <!-- Right character: trousers and shoes -->
+                            <path d="M174 244 L169 307" stroke="#475569" stroke-width="17" stroke-linecap="round"/>
+                            <path d="M208 244 L213 307" stroke="#475569" stroke-width="17" stroke-linecap="round"/>
+                            <ellipse cx="164" cy="311" rx="15" ry="8" fill="#0f172a"/>
+                            <ellipse cx="219" cy="311" rx="15" ry="8" fill="#0f172a"/>
+
+                            <!-- Left character outfit -->
+                            <path d="M69 153 C72 137 137 137 145 153 L150 246 C150 257 65 257 65 246 Z" fill="#fb7185"/>
+                            <path d="M100 151 L100 176 M115 151 L115 176" stroke="#fff1f2" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Right character outfit -->
+                            <path d="M155 153 C163 137 228 137 231 153 L235 246 C235 257 150 257 150 246 Z" fill="#a78bfa"/>
+                            <path d="M185 151 L185 176 M200 151 L200 176" stroke="#f5f3ff" stroke-width="3" stroke-linecap="round"/>
+
+                            <!-- Arms reaching toward their shared heart -->
+                            <path d="M73 165 C53 183 69 207 111 207" stroke="#f43f5e" stroke-width="15" stroke-linecap="round" fill="none"/>
+                            <path d="M226 165 C247 183 231 207 189 207" stroke="#8b5cf6" stroke-width="15" stroke-linecap="round" fill="none"/>
+                            <circle cx="111" cy="207" r="9" fill="#fed7aa"/>
+                            <circle cx="189" cy="207" r="9" fill="#fed7aa"/>
+
+                            <!-- Left character neck and face -->
+                            <rect x="94" y="124" width="20" height="24" rx="6" fill="#fed7aa"/>
+                            <ellipse cx="104" cy="96" rx="39" ry="43" fill="#fed7aa"/>
+                            <path d="M65 99 C61 61 89 43 108 46 C139 48 147 75 140 105 C130 83 117 76 98 78 C83 78 73 88 65 99 Z" fill="#334155"/>
+                            <path d="M75 68 Q87 45 111 51 Q97 65 82 77 Z" fill="#475569"/>
+                            <ellipse cx="91" cy="99" rx="4.5" ry="6" fill="#1e293b"/>
+                            <ellipse cx="118" cy="99" rx="4.5" ry="6" fill="#1e293b"/>
+                            <circle cx="92" cy="97" r="1.8" fill="#fff"/>
+                            <circle cx="119" cy="97" r="1.8" fill="#fff"/>
+                            <ellipse cx="82" cy="109" rx="7" ry="4" fill="#f43f5e" opacity="0.4"/>
+                            <ellipse cx="128" cy="109" rx="7" ry="4" fill="#f43f5e" opacity="0.4"/>
+                            <path d="M97 115 Q104 122 111 115" stroke="#9f1239" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+                            <!-- Right character neck and face -->
+                            <rect x="186" y="124" width="20" height="24" rx="6" fill="#fed7aa"/>
+                            <ellipse cx="196" cy="96" rx="39" ry="43" fill="#fed7aa"/>
+                            <path d="M157 98 C151 66 174 45 198 45 C225 45 242 66 235 101 C224 82 211 75 194 77 C178 78 166 87 157 98 Z" fill="#4b3621"/>
+                            <path d="M163 76 C169 48 197 42 219 57 C207 59 194 69 184 82 Z" fill="#6b4b32"/>
+                            <path d="M224 75 Q246 91 233 122" stroke="#4b3621" stroke-width="8" stroke-linecap="round" fill="none"/>
+                            <ellipse cx="183" cy="99" rx="4.5" ry="6" fill="#1e293b"/>
+                            <ellipse cx="210" cy="99" rx="4.5" ry="6" fill="#1e293b"/>
+                            <circle cx="184" cy="97" r="1.8" fill="#fff"/>
+                            <circle cx="211" cy="97" r="1.8" fill="#fff"/>
+                            <ellipse cx="174" cy="109" rx="7" ry="4" fill="#f43f5e" opacity="0.4"/>
+                            <ellipse cx="220" cy="109" rx="7" ry="4" fill="#f43f5e" opacity="0.4"/>
+                            <path d="M189 115 Q196 122 203 115" stroke="#9f1239" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+                            <!-- Their shared glowing heart -->
+                            <g class="animate-heart-pulse" id="glowing-heart-svg" transform="translate(125, 165)">
+                                <path d="M25 10 C25 -5 0 -5 0 15 C0 30 25 45 25 50 C25 45 50 30 50 15 C50 -5 25 -5 25 10 Z" fill="url(#heartGradient)" filter="url(#glow)"/>
+                            </g>
+
+                            <!-- Gradient and glow definitions -->
+                            <defs>
+                                <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ff2a6d" />
+                                    <stop offset="100%" stop-color="#e11d48" />
+                                </linearGradient>
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="3" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                        </svg>
+
+                        <!-- Sparkle Decorations -->
+                        <i class="fa-solid fa-sparkle sparkle text-amber-300 text-xl absolute top-8 left-4"></i>
+                        <i class="fa-solid fa-heart sparkle text-rose-400 text-sm absolute top-16 right-6"></i>
+                    </div>
+
+                    <p class="text-xs font-semibold text-rose-500 mt-2 flex items-center gap-1.5 animate-pulse">
+                        <i class="fa-solid fa-hand-pointer"></i> Tap the heart or character!
+                    </p>
+                </div>
+
+                <!-- Right Column: Title & 4-Line Poem -->
+                <div class="md:col-span-7 flex flex-col justify-center space-y-5 text-gray-800">
+                    
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-rose-600 font-handwriting tracking-wide">
+                            For My Lovely Shravika 💖
+                        </h1>
+                        <p class="text-xs uppercase tracking-widest text-rose-400 font-bold mt-1">
+                            A Lifetime Promise & Endless Care
+                        </p>
+                    </div>
+
+                    <!-- 4-Line Poem Display -->
+                    <div class="bg-white/85 rounded-2xl p-5 md:p-6 shadow-inner border border-rose-100 space-y-3 relative overflow-hidden">
+                        <i class="fa-solid fa-quote-left text-3xl text-rose-200 absolute top-2 right-4 pointer-events-none"></i>
+                        
+                        <div class="font-handwriting text-2xl text-rose-700 leading-relaxed space-y-2">
+                            <p class="hover:text-rose-500 transition-colors">A heart full of love meets an ocean of care.</p>
+                            <p class="hover:text-rose-500 transition-colors">We share a lifetime commitment and a bond so rare.</p>
+                            <p class="hover:text-rose-500 transition-colors">Your hand stays in my hand, and your smile becomes my guide.</p>
+                            <p class="hover:text-rose-500 transition-colors">My whole world is complete with you by my side.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="openNoteModal(event)" class="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold px-6 py-3.5 rounded-full shadow-lg shadow-rose-500/30 transition hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text"></i> Open Secret Note
+                        </button>
+                        
+                        <button onclick="openScratchModal(event)" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-300/60 font-bold px-5 py-3.5 rounded-full transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Reveal Surprise
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECRET NOTE MODAL -->
+    <div id="note-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white/95 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-rose-100 relative transform scale-95 transition-transform duration-300" id="note-card">
+            
+            <button onclick="closeNoteModal(event)" class="absolute top-4 right-4 text-gray-400 hover:text-rose-600 text-xl w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-rose-50 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-4">
+                <div class="inline-block p-3 bg-rose-100 text-rose-500 rounded-full mb-2">
+                    <i class="fa-solid fa-heart text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-rose-600">A Secret Note For You</h3>
+            </div>
+
+            <div class="text-gray-700 text-sm md:text-base leading-relaxed space-y-3 font-medium max-h-[60vh] overflow-y-auto pr-2">
+                <p class="font-bold text-rose-600 text-lg font-handwriting">My lovely Shravika,</p>
+                <p>Getting to know you and stepping into this new chapter together feels really special. You've brought so much warmth into my life, and I'm truly happy it's you I'm sharing this journey with.</p>
+                <p>As we step into our engagement and build our future, I want to promise you one thing: my love, care, and lifetime commitment are completely yours. You are my home, my comfort, and my absolute favorite person.</p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-rose-100 text-right">
+                <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Forever yours,</p>
+                <p class="text-2xl font-bold text-rose-600 font-handwriting">Krishna ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRATCH & REVEAL MODAL -->
+    <div id="scratch-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white/95 rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-rose-100 text-center relative">
+            <button onclick="closeScratchModal(event)" class="absolute top-4 right-4 text-gray-400 hover:text-rose-600 text-xl w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-rose-50 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-amber-700 mb-1">Scratch to Reveal Promise</h3>
+            <p class="text-xs text-gray-500 mb-4">Use your finger or mouse to scratch the gold heart layer!</p>
+
+            <!-- Scratch Container -->
+            <div class="relative w-64 h-64 mx-auto rounded-2xl overflow-hidden shadow-inner bg-rose-50 flex flex-col items-center justify-center p-4 border border-rose-200">
+                
+                <!-- Secret Hidden Message Beneath -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-rose-100 to-pink-50">
+                    <i class="fa-solid fa-ring text-3xl text-amber-500 mb-2 animate-bounce"></i>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-rose-400">My Promise To You</p>
+                    <p class="text-base font-bold text-rose-600 font-handwriting mt-1">"I choose you today, tomorrow, and every single day forever."</p>
+                    <p class="text-xs text-amber-600 font-bold mt-2">— Krishna</p>
+                </div>
+
+                <!-- Canvas Layer Over Message -->
+                <canvas id="scratch-canvas" class="absolute inset-0 z-10 w-full h-full"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /* --- Background Floating Particles Canvas --- */
+        const canvas = document.getElementById('heart-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 14 + 8;
+                this.speedY = Math.random() * 1.2 + 0.6;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.color = ['#ff4d6d', '#fb7185', '#fda4af', '#f43f5e'][Math.floor(Math.random() * 4)];
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText('♥', this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 25; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        /* --- Global Tap-to-Burst Heart Effect --- */
+        function createGlobalBurst(e) {
+            // Ignore if clicking buttons/modals
+            if (e.target.closest('button') || e.target.closest('#note-card') || e.target.closest('#scratch-canvas')) return;
+
+            const x = e.clientX;
+            const y = e.clientY;
+            const icons = ['❤️', '💖', '✨', '🌸', '💕'];
+
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'burst-heart';
+                heart.innerText = icons[Math.floor(Math.random() * icons.length)];
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 40 + Math.random() * 70;
+                const dx = `${Math.cos(angle) * distance}px`;
+                const dy = `${Math.sin(angle) * distance}px`;
+                const rot = `${(Math.random() - 0.5) * 60}deg`;
+
+                heart.style.setProperty('--dx', dx);
+                heart.style.setProperty('--dy', dy);
+                heart.style.setProperty('--rot', rot);
+                heart.style.fontSize = `${14 + Math.random() * 14}px`;
+
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1600);
+            }
+        }
+
+        function onCharacterClick(e) {
+            e.stopPropagation();
+            createGlobalBurst(e);
+            playChimeSound();
+        }
+
+        /* --- Tone.js Romantic Ambient Sound Generator --- */
+        let isMusicPlaying = false;
+        let synth = null;
+        let melodyLoop = null;
+
+        function initSynth() {
+            if (!synth) {
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.5, decay: 1, sustain: 0.4, release: 2 }
+                }).toDestination();
+                synth.volume.value = -12;
+            }
+        }
+
+        function playChimeSound() {
+            try {
+                if (Tone.context.state !== 'running') Tone.start();
+                initSynth();
+                const notes = ["C5", "E5", "G5", "B5", "C6"];
+                const note = notes[Math.floor(Math.random() * notes.length)];
+                synth.triggerAttackRelease(note, "8n");
+            } catch(err) {}
+        }
+
+        function toggleMusic(e) {
+            e.stopPropagation();
+            if (Tone.context.state !== 'running') {
+                Tone.start();
+            }
+            initSynth();
+
+            const musicText = document.getElementById('music-text');
+            const musicIcon = document.getElementById('music-icon');
+
+            if (!isMusicPlaying) {
+                isMusicPlaying = true;
+                musicText.innerText = "Pause Music";
+                musicIcon.className = "fa-solid fa-pause text-rose-500 animate-spin";
+                
+                const sequence = ["C4", "E4", "G4", "B4", "C5", "E5", "G4", "B4"];
+                let step = 0;
+                melodyLoop = setInterval(() => {
+                    synth.triggerAttackRelease(sequence[step % sequence.length], "4n");
+                    step++;
+                }, 800);
+            } else {
+                isMusicPlaying = false;
+                musicText.innerText = "Play Romantic Music";
+                musicIcon.className = "fa-solid fa-music text-rose-500";
+                if (melodyLoop) clearInterval(melodyLoop);
+            }
+        }
+
+        /* --- Modal Window Controls --- */
+        function openNoteModal(e) {
+            e.stopPropagation();
+            playChimeSound();
+            const modal = document.getElementById('note-modal');
+            const card = document.getElementById('note-card');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }
+
+        function closeNoteModal(e) {
+            e.stopPropagation();
+            const modal = document.getElementById('note-modal');
+            const card = document.getElementById('note-card');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+        }
+
+        /* --- Scratch Card Logic --- */
+        let scratchCanvas, scratchCtx, isScratching = false;
+
+        function initScratchCard() {
+            scratchCanvas = document.getElementById('scratch-canvas');
+            scratchCtx = scratchCanvas.getContext('2d');
+            scratchCanvas.width = scratchCanvas.offsetWidth;
+            scratchCanvas.height = scratchCanvas.offsetHeight;
+
+            // Fill with elegant shimmer layer
+            const grad = scratchCtx.createLinearGradient(0, 0, scratchCanvas.width, scratchCanvas.height);
+            grad.addColorStop(0, '#fef08a');
+            grad.addColorStop(0.5, '#f59e0b');
+            grad.addColorStop(1, '#d97706');
+            scratchCtx.fillStyle = grad;
+            scratchCtx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+
+            // Add text overlay on scratch layer
+            scratchCtx.fillStyle = '#ffffff';
+            scratchCtx.font = 'bold 16px sans-serif';
+            scratchCtx.textAlign = 'center';
+            scratchCtx.fillText('✨ Scratch Here ✨', scratchCanvas.width / 2, scratchCanvas.height / 2);
+
+            scratchCtx.globalCompositeOperation = 'destination-out';
+        }
+
+        function openScratchModal(e) {
+            e.stopPropagation();
+            playChimeSound();
+            const modal = document.getElementById('scratch-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(initScratchCard, 100);
+        }
+
+        function closeScratchModal(e) {
+            e.stopPropagation();
+            const modal = document.getElementById('scratch-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function scratch(x, y) {
+            scratchCtx.beginPath();
+            scratchCtx.arc(x, y, 22, 0, Math.PI * 2);
+            scratchCtx.fill();
+        }
+
+        // Mouse & Touch events for scratch canvas
+        const scCanvas = document.getElementById('scratch-canvas');
+        scCanvas.addEventListener('mousedown', (e) => { isScratching = true; handleScratch(e); });
+        scCanvas.addEventListener('mousemove', (e) => { if (isScratching) handleScratch(e); });
+        window.addEventListener('mouseup', () => isScratching = false);
+
+        scCanvas.addEventListener('touchstart', (e) => { isScratching = true; handleScratch(e.touches[0]); });
+        scCanvas.addEventListener('touchmove', (e) => { if (isScratching) handleScratch(e.touches[0]); });
+        window.addEventListener('touchend', () => isScratching = false);
+
+        function handleScratch(e) {
+            const rect = scCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            scratch(x, y);
+        }
+
+        /* --- Engagement Countdown Timer --- */
+        const engagementDate = new Date('November 11, 2026 00:00:00').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = engagementDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown-timer').innerHTML = `
+                    <div class="col-span-4 text-center text-rose-600 font-bold text-lg font-handwriting py-1">
+                        💖 Today is Our Special Day! 💍
+                    </div>
+                `;
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = String(days).padStart(2, '0');
+            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
